@@ -41,9 +41,9 @@ stages:
               displayName: Build eframe docker
               inputs:
                 containerRegistry: 'venkatACR'
-                repository: 'eframeDockerImage'
+                repository: "$(eframeDockerImage)"
                 command: 'build'
-                Dockerfile: 'eframeDockerFile'
+                Dockerfile: "$(eframeDockerFile)"
                 tags: |
                   $(Build.SourceVersion)
                   $(Build.BuildNumber)          
