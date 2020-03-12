@@ -10,7 +10,7 @@ pr:
     
   paths:
     include:
-      - node-docker-good-defaults-master/*
+      - docker-nodejs-helloworld-master/*
 
 trigger:
   batch: true
@@ -20,7 +20,7 @@ trigger:
     - releases
   paths:
     include:
-      - node-docker-good-defaults-master/*
+      - docker-nodejs-helloworld-master/*
     
 # list variables that will be used by the build pipeline
 variables:
@@ -68,7 +68,7 @@ stages:
               SourceFolder: "$(Build.SourcesDirectory)"
               Contents: |
                 **/package.json               
-              TargetFolder: "$(Build.ArtifactStagingDirectory)/$(System.StageName)"
+              TargetFolder: "$(Build.ArtifactStagingDirectory)"
               flattenFolders: true
               cleanTargetFolder: false # Optional
               overWrite: false # Optional
