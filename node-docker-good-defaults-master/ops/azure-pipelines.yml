@@ -1,0 +1,117 @@
+# Steps that build docker image and push it into ACR
+# https://aka.ms/yaml
+name: $(Date:yyyyMMdd)$(Rev:.r)
+
+pr:
+  branches:
+    include:
+    - develop
+    - releases
+    
+  paths:
+    include:
+      - graphql-apollo-starter/*
+
+trigger:
+  batch: true
+  branches:
+    include:
+    - develop
+    - releases
+  paths:
+    include:
+      - graphql-apollo-starter/*
+    
+# list variables that will be used by the build pipeline
+variables:
+  #group: Twistlock
+  eframeDockerFile: "$(Build.SourcesDirectory)/eframe-services-Feature-PE-57-unit-test/graphql-apollo-starter"
+  eframeDockerImage: "eframe-services/dev/graphql-apollo-starter"
+  
+stages:
+  - stage: Compile
+    jobs:
+      # - job: CredScan
+      #   pool:
+      #     vmImage: "windows-latest"
+      #   steps:
+      #     - task: CredScan@2
+      #       displayName: "Scan for secrets"
+      #       inputs:
+      #         scanFolder: 'graphql-apollo-starter/'
+      #         verboseOutput: true
+      #         debugMode: false
+
+      #     - task: PublishSecurityAnalysisLogs@2
+      #       displayName: "Publish secret scan logs to Build Artifacts"
+      #       continueOnError: true
+
+      #     - task: PostAnalysis@1
+      #       displayName: "Post Analysis of CredScan"
+      #       inputs:
+      #         CredScan: true
+      #         ToolLogsNotFoundAction: 'Standard'
+      
+      - job: eframeImageBuild
+        timeoutInMinutes: 180
+        pool:
+          vmImage: "ubuntu-latest"
+        # Pipeline steps to build the app
+        steps:         
+
+          # Task to build the docker image and tag it          
+          - task: Docker@2
+            displayName: Build eframe docker
+            inputs: 
+              containerRegistry: "DEPNONPRODACR"              
+              buildContext: "$(Build.SourcesDirectory)/eframe-services-Feature-PE-57-unit-test/graphql-apollo-starter"
+              command: "build"
+              Dockerfile: "$(eframeDockerFile)"
+              repository: "$(eframeDockerImage)"              
+              tags: |
+                $(Build.SourceVersion)
+                $(Build.BuildNumber)
+
+               
+          # Task to push the docker image to the Container Registry
+          - task: Docker@2
+            displayName: Push eframe docker image to DEPNONPRODACR            
+            inputs:
+              containerRegistry: "DEPNONPRODACR"              
+              buildContext: "$(Build.SourcesDirectory)/eframe-services-Feature-PE-57-unit-test/graphql-apollo-starter"
+              command: "push"
+              Dockerfile: "$(eframeDockerFile)"
+              repository: "$(eframeDockerImage)"            
+                           
+              tags: |
+                $(Build.SourceVersion)
+                $(Build.BuildNumber)          
+          
+            # ===============================================================================================
+
+      - job: CopyArtifacts
+        pool:
+          vmImage: "windows-latest"
+        steps:
+          # Task to copy the files
+          - task: CopyFiles@2
+            #condition: and(succeeded(), in(variables['build.reason'], 'IndividualCI', 'BatchedCI'))
+            displayName: "Copy files from code download to Staging Directory"
+            inputs:
+              SourceFolder: "$(Build.SourcesDirectory)"
+              Contents: |
+                **/graphql-apollo-starter/.env.example                
+              TargetFolder: "$(Build.ArtifactStagingDirectory)/$(System.StageName)"
+              flattenFolders: true
+              cleanTargetFolder: false # Optional
+              overWrite: false # Optional
+              preserveTimestamp: true # Optional
+
+          # Task to publish the copied files to the DevOps Staging directory
+          - task: PublishBuildArtifacts@1
+            #condition: and(succeeded(), in(variables['build.reason'], 'IndividualCI', 'BatchedCI'))
+            displayName: "Publish Artifact: BuildOutput"
+            inputs:
+              pathToPublish: $(Build.ArtifactStagingDirectory)
+              publishLocation: "Container"
+              artifactName: "build-output"
