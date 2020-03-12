@@ -44,6 +44,9 @@ stages:
             repository: '$(eframeDockerImage)'
             command: 'buildAndPush'
             Dockerfile: '**/Dockerfile'
+            tags: |
+                $(Build.SourceVersion)
+                $(Build.BuildNumber)  
 
             # - task: Docker@2
             #   displayName: Build eframe docker
@@ -72,20 +75,7 @@ stages:
           vmImage: "windows-latest"
           steps:
           - task: CopyFiles@2
-            displayName: "Copy files from code download to Staging Directory"
             inputs:
-              SourceFolder: "$(Build.SourcesDirectory)"
-              Contents: |
-                **/package.json               
-              TargetFolder: "$(Build.ArtifactStagingDirectory)"
-              flattenFolders: true
-              cleanTargetFolder: false # Optional
-              overWrite: false # Optional
-              preserveTimestamp: true # Optional
-          - task: PublishBuildArtifacts@1
-            #condition: and(succeeded(), in(variables['build.reason'], 'IndividualCI', 'BatchedCI'))
-            displayName: "Publish Artifact: BuildOutput"
-            inputs:
-              PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-              ArtifactName: 'drop'
-              publishLocation: 'Container'
+              SourceFolder: '$(Build.SourcesDirectory)'
+              Contents: '**'
+              TargetFolder: '$(Build.ArtifactStagingDirectory)'
