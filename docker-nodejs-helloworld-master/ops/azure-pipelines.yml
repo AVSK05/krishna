@@ -36,28 +36,37 @@ stages:
         pool:
           vmImage: "ubuntu-latest"
         # Pipeline steps to build the app
-        steps:         
-            - task: Docker@2
-              displayName: Build eframe docker
-              inputs:
-                containerRegistry: 'venkatACR'
-                repository: "$(eframeDockerImage)"
-                command: 'build'
-                Dockerfile: "$(eframeDockerFile)"
-                tags: |
-                  $(Build.SourceVersion)
-                  $(Build.BuildNumber)          
+        steps:        
+        - task: Docker@2
+          displayName: Build eframe docker
+          inputs:
+            containerRegistry: 'venkatACR'
+            repository: '$(eframeDockerImage)'
+            command: 'buildAndPush'
+            Dockerfile: '**/Dockerfile'
+
+            # - task: Docker@2
+            #   displayName: Build eframe docker
+            #   inputs:
+            #     containerRegistry: 'venkatACR'
+            #     repository: "$(eframeDockerImage)"
+            #     command: 'build'
+            #     Dockerfile: "$(eframeDockerFile)"
+            #     tags: |
+            #       $(Build.SourceVersion)
+            #       $(Build.BuildNumber)          
           
-            - task: Docker@2
-              displayName: Build eframe docker
-              inputs:
-                containerRegistry: 'venkatACR'
-                repository: 'eframeDockerImage'
-                command: 'push'
-                Dockerfile: 'eframeDockerFile'
-                tags: |
-                  $(Build.SourceVersion)
-                  $(Build.BuildNumber) 
+            # - task: Docker@2
+            #   displayName: Build eframe docker
+            #   inputs:
+            #     containerRegistry: 'venkatACR'
+            #     repository: 'eframeDockerImage'
+            #     command: 'push'
+            #     Dockerfile: 'eframeDockerFile'
+            #     tags: |
+            #       $(Build.SourceVersion)
+            #       $(Build.BuildNumber) 
+        ##########################################          
       - job: CopyArtifacts
         pool:
           vmImage: "windows-latest"
