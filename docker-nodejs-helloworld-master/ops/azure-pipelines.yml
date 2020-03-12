@@ -1,0 +1,82 @@
+# Steps that build docker image and push it into ACR
+# https://aka.ms/yaml
+name: $(Date:yyyyMMdd)$(Rev:.r)
+
+pr:
+  branches:
+    include:
+    - develop
+    - releases
+    
+  paths:
+    include:
+      - node-docker-good-defaults-master/*
+
+trigger:
+  batch: true
+  branches:
+    include:
+    - develop
+    - releases
+  paths:
+    include:
+      - node-docker-good-defaults-master/*
+    
+# list variables that will be used by the build pipeline
+variables:
+  #group: Twistlock
+  eframeDockerFile: "$(Build.SourcesDirectory)"
+  eframeDockerImage: "eframe-services/dev/graphql-apollo-starter"
+  
+stages:
+  - stage: Compile
+    jobs: 
+      - job: eframeImageBuild
+        timeoutInMinutes: 180
+        pool:
+          vmImage: "ubuntu-latest"
+        # Pipeline steps to build the app
+        steps:         
+            - task: Docker@2
+              displayName: Build eframe docker
+              inputs:
+                containerRegistry: 'venkatACR'
+                repository: "$(eframeDockerImage)"
+                command: 'build'
+                Dockerfile: "$(eframeDockerFile)"
+                tags: |
+                  $(Build.SourceVersion)
+                  $(Build.BuildNumber)          
+          
+            - task: Docker@2
+              displayName: Build eframe docker
+              inputs:
+                containerRegistry: 'venkatACR'
+                repository: 'eframeDockerImage'
+                command: 'push'
+                Dockerfile: 'eframeDockerFile'
+                tags: |
+                  $(Build.SourceVersion)
+                  $(Build.BuildNumber) 
+      - job: CopyArtifacts
+        pool:
+          vmImage: "windows-latest"
+          steps:
+          - task: CopyFiles@2
+            displayName: "Copy files from code download to Staging Directory"
+            inputs:
+              SourceFolder: "$(Build.SourcesDirectory)"
+              Contents: |
+                **/package.json               
+              TargetFolder: "$(Build.ArtifactStagingDirectory)/$(System.StageName)"
+              flattenFolders: true
+              cleanTargetFolder: false # Optional
+              overWrite: false # Optional
+              preserveTimestamp: true # Optional
+          - task: PublishBuildArtifacts@1
+            #condition: and(succeeded(), in(variables['build.reason'], 'IndividualCI', 'BatchedCI'))
+            displayName: "Publish Artifact: BuildOutput"
+            inputs:
+              PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+              ArtifactName: 'drop'
+              publishLocation: 'Container'
