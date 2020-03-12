@@ -25,7 +25,7 @@ trigger:
 # list variables that will be used by the build pipeline
 variables:
   #group: Twistlock
-  eframeDockerFile: "$(Build.SourcesDirectory)/node-docker-good-defaults-master"
+  eframeDockerFile: "$(Build.SourcesDirectory)"
   eframeDockerImage: "eframe-services/dev/graphql-apollo-starter"
   
 stages:
@@ -77,6 +77,6 @@ stages:
             #condition: and(succeeded(), in(variables['build.reason'], 'IndividualCI', 'BatchedCI'))
             displayName: "Publish Artifact: BuildOutput"
             inputs:
-              pathToPublish: $(Build.ArtifactStagingDirectory)
-              publishLocation: "Container"
-              artifactName: "build-output"
+              PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+              ArtifactName: 'drop'
+              publishLocation: 'Container'
