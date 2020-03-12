@@ -67,7 +67,7 @@ stages:
             inputs:
               SourceFolder: "$(Build.SourcesDirectory)"
               Contents: |
-                **package.json               
+                **/package.json               
               TargetFolder: "$(Build.ArtifactStagingDirectory)/$(System.StageName)"
               flattenFolders: true
               cleanTargetFolder: false # Optional
