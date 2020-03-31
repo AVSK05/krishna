@@ -40,18 +40,18 @@ spec:
     port: 80
     targetPort: 4000
   type: LoadBalancer
----
-apiVersion: extensions/v1beta1
-kind: Ingress
-metadata:
-  name: eframe-graphql
-  annotations:
-    kubernetes.io/ingress.class: addon-http-application-routing
-spec:
-  rules:
-    http:
-      paths:
-      - backend:
-          serviceName: eframe-graphql
-          servicePort: 80
-        path: /
+#---
+# apiVersion: extensions/v1beta1
+# kind: Ingress
+# metadata:
+#   name: eframe-graphql
+#   annotations:
+#     kubernetes.io/ingress.class: addon-http-application-routing
+# spec:
+#   rules:
+#     http:
+#       paths:
+#       - backend:
+#           serviceName: eframe-graphql
+#           servicePort: 80
+#         path: /
