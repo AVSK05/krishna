@@ -17,7 +17,7 @@ spec:
       terminationGracePeriodSeconds: 30
       containers:
       - name: eframe-graphql
-        image: depnonprodregistry.azurecr.io/eframe-services/dev/graphql-apollo-starter:__version__
+        image: venkat123.azurecr.io/venkat:__version__
         imagePullPolicy: "Always"
         ports:
         - containerPort: 4000 
