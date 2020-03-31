@@ -1,0 +1,58 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: eframe-graphql
+  labels:
+    app: eframe-graphql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: eframe-graphql
+  template:
+    metadata:
+      labels:
+        app: eframe-graphql
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+      - name: eframe-graphql
+        image: depnonprodregistry.azurecr.io/eframe-services/dev/graphql-apollo-starter:__version__
+        imagePullPolicy: "Always"
+        ports:
+        - containerPort: 4000 
+        env:
+        - name: PORT
+          value: "80"       
+      restartPolicy: Always
+      imagePullSecrets:
+        - name: acrsecret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: eframe-graphql  
+spec:
+  selector:
+    app: eframe-graphql
+  ports:
+  - protocol: "TCP"
+    port: 80
+    targetPort: 4000
+  type: LoadBalancer
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: eframe-graphql
+  annotations:
+    kubernetes.io/ingress.class: addon-http-application-routing
+spec:
+  rules:
+  - host: eframe-graphql.__PUBLIC_DNS__
+    http:
+      paths:
+      - backend:
+          serviceName: eframe-graphql
+          servicePort: 80
+        path: /
