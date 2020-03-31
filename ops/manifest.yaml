@@ -20,7 +20,7 @@ spec:
         image: venkat123.azurecr.io/venkat:__version__
         imagePullPolicy: "Always"
         ports:
-        - containerPort: 4000 
+        - containerPort: 80 
         env:
         - name: PORT
           value: "80"       
@@ -38,7 +38,7 @@ spec:
   ports:
   - protocol: "TCP"
     port: 80
-    targetPort: 4000
+    targetPort: 80
   type: LoadBalancer
 #---
 # apiVersion: extensions/v1beta1
