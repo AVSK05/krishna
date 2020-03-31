@@ -1,1 +1,78 @@
-hi
+# Steps that build docker image and push it into ACR
+# https://aka.ms/yaml
+name: $(Date:yyyyMMdd)$(Rev:.r)
+pr:
+  branches:
+    include:
+    - develop
+    - releases
+
+trigger:
+  batch: true
+  branches:
+    include:
+    - develop
+    - releases
+    
+# list variables that will be used by the build pipeline#
+
+  
+stages:
+  - stage: Compile
+    jobs:           
+      - job: eframeImageBuild
+        timeoutInMinutes: 180
+        pool:
+          vmImage: "ubuntu-latest"
+        # Pipeline steps to build the app
+        steps:         
+          - task: Docker@2
+            inputs:
+              containerRegistry: 'venkat-acr'
+              repository: 'venkat'
+              command: 'buildAndPush'
+              Dockerfile: '**/Dockerfile'
+              tags: |                
+                $(Build.BuildNumber)
+            # ===============================================================================================
+
+      - job: CopyArtifacts
+        pool:
+          vmImage: "windows-latest"
+        steps:
+          # Task to copy the files
+          - task: CopyFiles@2
+            displayName: "Copy files from code download"
+            inputs:
+              SourceFolder: '$(Build.SourcesDirectory)'
+              Contents: '**/ops/**'
+              TargetFolder: '$(Build.ArtifactStagingDirectory)'
+              flattenFolders: true
+              cleanTargetFolder: false # Optional
+              overWrite: false # Optional
+              preserveTimestamp: true # Optional
+          
+          # Task to publish the copied files to the DevOps Staging directory
+          - task: PublishBuildArtifacts@1
+            displayName: "Publish Artifact: Container"
+            inputs:
+              pathToPublish: $(Build.ArtifactStagingDirectory)
+              publishLocation: "Container"
+              artifactName: "eframe"
+
+
+       
+
+
+
+
+
+
+
+
+
+
+
+
+
+
