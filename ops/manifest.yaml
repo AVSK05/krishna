@@ -49,7 +49,6 @@ metadata:
     kubernetes.io/ingress.class: addon-http-application-routing
 spec:
   rules:
-  - host: eframe-graphql.__PUBLIC_DNS__
     http:
       paths:
       - backend:
