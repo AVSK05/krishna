@@ -20,20 +20,20 @@ trigger:
 stages:
   - stage: Compile
     jobs:           
-      - job: eframeImageBuild
-        timeoutInMinutes: 180
-        pool:
-          vmImage: "ubuntu-latest"
-        # Pipeline steps to build the app
-        steps:         
-          - task: Docker@2
-            inputs:
-              containerRegistry: 'venkat-acr'
-              repository: 'venkat'
-              command: 'buildAndPush'
-              Dockerfile: '**/Dockerfile'
-              tags: |                
-                $(Build.BuildNumber)
+      # - job: eframeImageBuild
+      #   timeoutInMinutes: 180
+      #   pool:
+      #     vmImage: "ubuntu-latest"
+      #   # Pipeline steps to build the app
+      #   steps:         
+      #     - task: Docker@2
+      #       inputs:
+      #         containerRegistry: 'venkat-acr'
+      #         repository: 'venkat'
+      #         command: 'buildAndPush'
+      #         Dockerfile: '**/Dockerfile'
+      #         tags: |                
+      #           $(Build.BuildNumber)
             # ===============================================================================================
 
       - job: CopyArtifacts
@@ -45,7 +45,7 @@ stages:
             displayName: "Copy files from code download"
             inputs:
               SourceFolder: '$(Build.SourcesDirectory)'
-              Contents: '**/ops/**'
+              Contents: '**'
               TargetFolder: '$(Build.ArtifactStagingDirectory)'
               flattenFolders: true
               cleanTargetFolder: false # Optional
@@ -58,4 +58,4 @@ stages:
             inputs:
               pathToPublish: $(Build.ArtifactStagingDirectory)
               publishLocation: "Container"
-              artifactName: "eframe"
+              artifactName: "eframe1"
