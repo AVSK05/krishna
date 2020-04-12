@@ -27,4 +27,3 @@ resource "azurerm_api_management_api" "example" {
     content_value  = "http://conferenceapi.azurewebsites.net/?format=json"
   }
 }
-»
