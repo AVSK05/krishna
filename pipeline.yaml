@@ -45,7 +45,7 @@ stages:
             displayName: "Copy files from code download"
             inputs:
               SourceFolder: '$(Build.SourcesDirectory)'
-              Contents: '**'
+              Contents: '**/main.tf'
               TargetFolder: '$(Build.ArtifactStagingDirectory)'
               flattenFolders: true
               cleanTargetFolder: false # Optional
