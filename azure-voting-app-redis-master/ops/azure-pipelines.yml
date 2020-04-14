@@ -25,7 +25,7 @@ trigger:
 variables:
   #group: Twistlock
   eframeDockerFile: "$(Build.SourcesDirectory)/azure-voting-app-redis-master/azure-vote/Dockerfile"
-  eframeDockerImage: "eframe-services/dev/graphql-apollo-starter"
+  eframeDockerImage: "venkat"
   
 stages:
   - stage: Compile
@@ -42,13 +42,12 @@ stages:
           - task: Docker@2
             displayName: Build eframe docker
             inputs: 
-              containerRegistry: "DEPNONPRODACR"              
+              containerRegistry: "venkat-acr"              
               buildContext: "$(Build.SourcesDirectory)/azure-voting-app-redis-master/azure-vote"
               command: "buildAndPush"
               Dockerfile: "$(eframeDockerFile)"
               repository: "$(eframeDockerImage)"              
-              tags: |
-                $(Build.SourceVersion)
+              tags: |                
                 $(Build.BuildNumber)
                
             # ===============================================================================================
