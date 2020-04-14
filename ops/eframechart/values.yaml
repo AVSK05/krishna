@@ -1,12 +1,12 @@
 replicaCount: 1
 image:
-  repository: "depnonprodregistry.azurecr.io/eframe-services/dev/graphql-apollo-starter"
-  tag: 20200221.13
+  repository: venkat123.azurecr.io/venkat
+  tag: __version__
   pullPolicy: Always
 
 nameOverride: ""
 fullnameOverride: ""
-imagePullSecret: DEPNONPRODACR
+imagePullSecret: acrsecret
 service:
   type: ClusterIP
   port: 80
