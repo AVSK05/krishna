@@ -1,0 +1,25 @@
+replicaCount: 1
+image:
+  repository: "depnonprodregistry.azurecr.io/eframe-services/dev/graphql-apollo-starter"
+  tag: 20200221.13
+  pullPolicy: Always
+
+nameOverride: ""
+fullnameOverride: ""
+imagePullSecret: DEPNONPRODACR
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: false
+  annotations: {}
+  path: /
+  hosts:
+    - chart-example.local
+  tls: []
+
+resources: {}
+nodeSelector: {}
+tolerations: []
+affinity: {}
