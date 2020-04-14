@@ -1,7 +1,7 @@
 replicaCount: 1
 
 image:
-  repository: depnonprodregistry.azurecr.io/eframe-services/dev/graphql-apollo-starter
+  repository: venkat123.azurecr.io/venkat
   tag: __version__
   pullPolicy: Always
 
