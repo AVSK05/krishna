@@ -1,0 +1,78 @@
+# Steps that build docker image and push it into ACR
+# https://aka.ms/yaml
+name: $(Date:yyyyMMdd)$(Rev:.r)
+
+pr:
+  branches:
+    include:
+    - develop
+    - releases
+  paths:
+    include:
+      - azure-voting-app-redis-master/*
+
+trigger:
+  batch: true
+  branches:
+    include:
+    - develop
+    - releases
+  paths:
+    include:
+      - azure-voting-app-redis-master/*
+    
+# list variables that will be used by the build pipeline
+variables:
+  #group: Twistlock
+  eframeDockerFile: "$(Build.SourcesDirectory)/azure-voting-app-redis-master/azure-vote/Dockerfile"
+  eframeDockerImage: "eframe-services/dev/graphql-apollo-starter"
+  
+stages:
+  - stage: Compile
+    jobs:
+           
+      - job: eframeImageBuild
+        timeoutInMinutes: 180
+        pool:
+          vmImage: "ubuntu-latest"
+        # Pipeline steps to build the app
+        steps:         
+
+          # Task to build the docker image and tag it          
+          - task: Docker@2
+            displayName: Build eframe docker
+            inputs: 
+              containerRegistry: "DEPNONPRODACR"              
+              buildContext: "$(Build.SourcesDirectory)/azure-voting-app-redis-master/azure-vote"
+              command: "buildAndPush"
+              Dockerfile: "$(eframeDockerFile)"
+              repository: "$(eframeDockerImage)"              
+              tags: |
+                $(Build.SourceVersion)
+                $(Build.BuildNumber)
+               
+            # ===============================================================================================
+
+      - job: CopyArtifacts
+        pool:
+          vmImage: "windows-latest"
+        steps:
+          # Task to copy the files
+          - task: CopyFiles@2
+            displayName: "Copy files from code download"
+            inputs:
+              SourceFolder: '$(Build.SourcesDirectory)'
+              Contents: '**/azure-voting-app-redis-master/ops/vote-app/**'
+              TargetFolder: '$(Build.ArtifactStagingDirectory)'
+              flattenFolders: true
+              cleanTargetFolder: false # Optional
+              overWrite: false # Optional
+              preserveTimestamp: true # Optional
+          
+          # Task to publish the copied files to the DevOps Staging directory
+          - task: PublishBuildArtifacts@1
+            displayName: "Publish Artifact: Container"
+            inputs:
+              pathToPublish: $(Build.ArtifactStagingDirectory)
+              publishLocation: "Container"
+              artifactName: "eframe"
