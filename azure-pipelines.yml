@@ -1,0 +1,107 @@
+# Steps that build docker image and push it into ACR
+# https://aka.ms/yaml
+name: $(Date:yyyyMMdd)$(Rev:.r)
+
+pr:
+  branches:
+    include:
+    - develop
+
+trigger:
+  batch: true
+  branches:
+    include:
+    - develop
+    
+# list variables that will be used by the build pipeline
+variables:
+  eframeDockerFile: "$(Build.SourcesDirectory)/node-app/Dockerfile"
+  eframeDockerImage: "venkat"
+  containerRegistry: "venkat-acr"
+  
+stages:
+  - stage: Compile
+    jobs:
+           
+      - job: ImageBuild
+        timeoutInMinutes: 180
+        pool:
+          vmImage: "ubuntu-latest"
+        # Pipeline steps to build the app
+        steps:         
+
+          # Task to build the docker image and tag it          
+          - task: Docker@2
+            displayName: Build eframe docker
+            inputs: 
+              containerRegistry: "venkat-acr"              
+              buildContext: "$(Build.SourcesDirectory)/node-app"
+              command: "buildAndPush"
+              Dockerfile: "$(eframeDockerFile)"
+              repository: "$(eframeDockerImage)"              
+              tags: |                
+                $(Build.BuildNumber)
+               
+            # ===============================================================================================
+      - job: Helm
+        displayName: 'Build and Push Helm Chart'
+        pool:
+          vmImage: 'ubuntu-latest'
+
+        steps:
+          - checkout: self
+            fetchDepth: 1
+
+          - task: HelmInstaller@1
+            displayName: 'Initialize Helm'
+            inputs:
+              helmVersionToInstall: '$(helmVersion)'
+
+          - task: HelmDeploy@0
+            displayName: 'Package Helm Chart'
+            inputs:
+              command: 'package'
+              chartPath: 'helm'
+              chartVersion: '$(Build.BuildNumber)'
+              save: false
+
+          - task: AzureCLI@2
+            displayName: 'Push Helm Chart'
+            inputs:
+              azureSubscription: 'venkat-rgsc'
+              scriptType: 'bash'
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                az acr helm push \
+                  --name $(containerRegistry) \
+                  $(Build.ArtifactStagingDirectory)/$(eframeDockerImage)-$(Build.BuildNumber).tgz
+          
+          
+
+
+
+
+
+      # - job: CopyArtifacts
+      #   pool:
+      #     vmImage: "windows-latest"
+      #   steps:
+      #     # Task to copy the files
+      #     - task: CopyFiles@2
+      #       displayName: "Copy files from code download"
+      #       inputs:
+      #         SourceFolder: '$(Build.SourcesDirectory)'
+      #         Contents: '**/azure-voting-app-redis-master/ops/vote-app/**'
+      #         TargetFolder: '$(Build.ArtifactStagingDirectory)'
+      #         flattenFolders: true
+      #         cleanTargetFolder: false # Optional
+      #         overWrite: false # Optional
+      #         preserveTimestamp: true # Optional
+          
+      #     # Task to publish the copied files to the DevOps Staging directory
+      #     - task: PublishBuildArtifacts@1
+      #       displayName: "Publish Artifact: Container"
+      #       inputs:
+      #         pathToPublish: $(Build.ArtifactStagingDirectory)
+      #         publishLocation: "Container"
+      #         artifactName: "eframe"
