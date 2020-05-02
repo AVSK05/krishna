@@ -27,7 +27,7 @@ stages:
         
         - script: |
             echo "TEST"
-            echo "asg1= $(Build.BinariesDirectory)
+            echo "asg1= $(System.TeamProject)
             echo $asg1
             
       #       echo "buildContext= ${{ parameters.SOURCE_DIR }}"
