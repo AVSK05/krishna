@@ -5,14 +5,12 @@ pr:
   branches:
     include:
     - develop
-    - releases
 
 trigger:
   batch: true
   branches:
     include:
     - develop
-    - releases
     
 # list variables that will be used by the build pipeline#
 
@@ -25,40 +23,64 @@ stages:
         pool:
           vmImage: "ubuntu-latest"
         # Pipeline steps to build the app
-        steps:         
-          - task: Docker@2
-            inputs:
-              containerRegistry: 'venkat-acr'
-              repository: 'venkat'
-              command: 'buildAndPush'
-              Dockerfile: '**/Dockerfile'
-              tags: |                
-                $(Build.BuildNumber)
-            # ===============================================================================================
-
-      - job: CopyArtifacts
-        pool:
-          vmImage: "windows-latest"
         steps:
-          # Task to copy the files
-          - task: CopyFiles@2
-            displayName: "Copy files from code download"
-            inputs:
-              SourceFolder: '$(Build.SourcesDirectory)'
-              Contents: '**/ops/eframechart/**'
-              TargetFolder: '$(Build.ArtifactStagingDirectory)'
-              flattenFolders: true
-              cleanTargetFolder: false # Optional
-              overWrite: false # Optional
-              preserveTimestamp: true # Optional
+        
+        - script: |
+            echo "TEST"
+      #       echo "buildContext= ${{ parameters.SOURCE_DIR }}"
+      #       baseurl="${{ parameters.BASE_URL }}"
+      #       echo "baseurl=" $baseurl
+      #       dockerfile="${{ dockerfile }}"
+      #       branchname="${{ parameters.SOURCE_BRANCH_NAME }}"
+      #       echo "branchname=" $branchname
+      #       echo "Dockerfile= $dockerfile "
+      #       # Set docker image name
+      #       q=$(cut -d'.' -f1 <<< "$baseurl")
+      #       a=$(cut -d'.' -f2 <<< "$baseurl")
+      #       dprefix=$(echo $q"/"$a)
+      #       case "$branchname" in
+      #         "develop")
+      #           dprefix="eframe-services/dev" ;;
+      #         "master")
+      #           dprefix="eframe-services" ;;
+      #         "*release*")
+      #           dprefix="eframe-services/sit" ;;
+      #         *)
+      #           dprefix="eframe-services/dev" ;;
+      #       esac
+      #       echo "docker image prefix= $dprefix"
+      #       dsuffix=`echo $dockerfile |  awk -F / '{print "/" $7}' | sed 's/[^a-zA-Z0-9]//g'`
+      #       echo "docker image suffix = $dsuffix"
+      #       dname=$(echo $dprefix"/"$dsuffix)
+      #       echo $dname
+      #       echo "##vso[task.setvariable variable=dockerImage]$dname"
+      #   displayName: Set Docker image name
+      # #Task to build the docker image and tag it
+                
+
+      # - job: CopyArtifacts
+      #   pool:
+      #     vmImage: "windows-latest"
+      #   steps:
+      #     # Task to copy the files
+      #     - task: CopyFiles@2
+      #       displayName: "Copy files from code download"
+      #       inputs:
+      #         SourceFolder: '$(Build.SourcesDirectory)'
+      #         Contents: '**/ops/eframechart/**'
+      #         TargetFolder: '$(Build.ArtifactStagingDirectory)'
+      #         flattenFolders: true
+      #         cleanTargetFolder: false # Optional
+      #         overWrite: false # Optional
+      #         preserveTimestamp: true # Optional
           
-          # Task to publish the copied files to the DevOps Staging directory
-          - task: PublishBuildArtifacts@1
-            displayName: "Publish Artifact: Container"
-            inputs:
-              pathToPublish: $(Build.ArtifactStagingDirectory)
-              publishLocation: "Container"
-              artifactName: "eframe"
+      #     # Task to publish the copied files to the DevOps Staging directory
+      #     - task: PublishBuildArtifacts@1
+      #       displayName: "Publish Artifact: Container"
+      #       inputs:
+      #         pathToPublish: $(Build.ArtifactStagingDirectory)
+      #         publishLocation: "Container"
+      #         artifactName: "eframe"
 
 
        
