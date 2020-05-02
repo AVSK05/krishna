@@ -27,8 +27,12 @@ stages:
         
         - script: |
             echo "TEST"
-            echo "asg1= $(System.TeamProject)
+            echo "asg1= $(System.TeamProject)"
             echo $asg1
+            echo "asg= $(BUILD_BINARIESDIRECTORY)"
+            echo $asg
+            echo "asg2= $(BUILD_SOURCESDIRECTORY)"
+            echo $asg2
             
       #       echo "buildContext= ${{ parameters.SOURCE_DIR }}"
       #       baseurl="${{ parameters.BASE_URL }}"
