@@ -27,10 +27,8 @@ stages:
         
         - script: |
             echo "TEST"
-            echo "asg1= $(AGENT_WORKFOLDER)
-            echo $asg1
-            echo "asg= $(AGENT_HOMEDIRECTORY)
-            echo $asg
+            echo "asg1= $BUILD_SOURCESDIRECTORY)
+            
       #       echo "buildContext= ${{ parameters.SOURCE_DIR }}"
       #       baseurl="${{ parameters.BASE_URL }}"
       #       echo "baseurl=" $baseurl
