@@ -30,6 +30,7 @@ stages:
             FOO="some value"
             mkdir -p $(Pipeline.Workspace)/variables
             echo "$FOO" > $(Pipeline.Workspace)/variables/FOO
+            echo "$FOO"
 
           # Publish the folder as pipeline artifact
         - publish: $(Pipeline.Workspace)/variables
