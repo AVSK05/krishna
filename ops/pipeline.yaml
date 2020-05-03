@@ -24,17 +24,20 @@ stages:
           vmImage: "ubuntu-latest"
         # Pipeline steps to build the app
         steps:
-        
-        - script: |
-          
-            FOO="some value"
-            mkdir -p $(Pipeline.Workspace)/variables
-            echo "$FOO" > $(Pipeline.Workspace)/variables/FOO
-            echo "$FOO"
+         - script: |
+             sname=TEST_IMAGE
+             echo "##vso[task.setvariable variable=dockerImage;isOutput=true]$sname"  
+             echo $dockerImage
+        # - script: |
+            
+        #     FOO="some value"
+        #     mkdir -p $(Pipeline.Workspace)/variables
+        #     echo "$FOO" > $(Pipeline.Workspace)/variables/FOO
+        #     echo "$FOO"
 
-          # Publish the folder as pipeline artifact
-        - publish: $(Pipeline.Workspace)/variables
-          artifact: variables
+        #   # Publish the folder as pipeline artifact
+        # - publish: $(Pipeline.Workspace)/variables
+        #   artifact: variables
             
       #       echo "buildContext= ${{ parameters.SOURCE_DIR }}"
       #       baseurl="${{ parameters.BASE_URL }}"
