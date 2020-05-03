@@ -13,7 +13,8 @@ trigger:
     - develop
     
 # list variables that will be used by the build pipeline#
-
+variables:
+  group: var
   
 stages:
   - stage: Compile
@@ -28,6 +29,9 @@ stages:
              sname=TEST_IMAGE
              echo "##vso[task.setvariable variable=dockerImage;isOutput=true]$sname"  
              echo $dockerImage
+             echo $(dockerImage)
+             echo "$(dockerImage)"
+
         # - script: |
             
         #     FOO="some value"
