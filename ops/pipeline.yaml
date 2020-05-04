@@ -31,6 +31,8 @@ stages:
              echo $dockerImage
              echo $(dockerImage)
              echo "$(dockerImage)"
+             name=krishna
+             echo $(name)
 
         # - script: |
             
