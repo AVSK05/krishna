@@ -9,7 +9,7 @@
             "value": "eastus"
         },
         "sku": {
-            "value": "Free"
+            "value": "Basic"
         },
         "integrationAccountApiVersion": {
             "value": "2016-06-01"
