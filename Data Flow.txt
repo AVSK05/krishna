@@ -1,0 +1,10 @@
+Azure Data lake/Warehouse --> Cosmos DB Tables--> SSAS Cube --->  Power BI
+
+
+Data is pushed from Eastdil Transactional tables into Azure data lake using datbaricks notebooks/pipelines
+Sales ADS module is pushed from Azure lake to Cosmos DB using Databricks/notebooks
+Cosmos DB is Ready oly and Snapshot for reporting 
+From Cosmos DB, We are using Visal studio to build the Tabular model/Cube
+To build the Tabular model, We pull th required tables, Model design, Calculated fields, measures, 
+Then, we publish the cube/Model (SSAS Cube). 
+We use Power BI live connection to connect to the SSAS cube and build Dashboards
